@@ -9,12 +9,8 @@ setup(
     """,
     author='~nisfeb',
     packages=find_packages(include=[
-        'bridge',
-        'bridge.*',
-        'middleware',
-        'middleware.*',
-        'pipeline',
-        'pipeline.*'
+        'mqtt_pipeline',
+        'mqtt_pipeline.*',
     ]),
     python_requires='>=3.6',
     install_requires=[
