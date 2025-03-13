@@ -1,0 +1,6 @@
+[submodule "middleware/meshtastic/protobufs/meshtastic"]
+	path = middleware/meshtastic/protobufs/meshtastic
+	url = git@github.com:meshtastic/protobufs.git
+[submodule "middleware/meshtastic/protobufs"]
+	path = middleware/meshtastic/protobufs
+	url = git@github.com:meshtastic/protobufs.git
