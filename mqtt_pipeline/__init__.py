@@ -1,2 +1,3 @@
 import mqtt_pipeline.pipeline
 import mqtt_pipeline.middleware
+import mqtt_pipeline.bridge
