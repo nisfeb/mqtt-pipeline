@@ -1,2 +1,2 @@
-from .pipeline import Pipeline, Middleware
+from .pipeline import Pipeline
 from .middleware import Middleware
