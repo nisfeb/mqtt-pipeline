@@ -22,11 +22,11 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from meshtastic import channel_pb2 as meshtastic_dot_channel__pb2
-from meshtastic import mesh_pb2 as meshtastic_dot_mesh__pb2
-from meshtastic import telemetry_pb2 as meshtastic_dot_telemetry__pb2
-from meshtastic import config_pb2 as meshtastic_dot_config__pb2
-from meshtastic import localonly_pb2 as meshtastic_dot_localonly__pb2
+from . import channel_pb2 as meshtastic_dot_channel__pb2
+from . import mesh_pb2 as meshtastic_dot_mesh__pb2
+from . import telemetry_pb2 as meshtastic_dot_telemetry__pb2
+from . import config_pb2 as meshtastic_dot_config__pb2
+from . import localonly_pb2 as meshtastic_dot_localonly__pb2
 import nanopb_pb2 as nanopb__pb2
 
 
