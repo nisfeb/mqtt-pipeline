@@ -1,16 +1,21 @@
+import time
+
 from mqtt_pipeline.pipeline import Middleware
 
 
 class TlonFormatMiddleware(Middleware):
     """
-    Middleware for formatting and sending Meshtastic messages to Urbit using the Tlon format.
+    Middleware for formatting and sending Meshtastic messages to Urbit using
+    the Tlon format.
 
-    This middleware transforms Meshtastic protocol messages into the format required by
-    Urbit's Channels application, then sends the formatted data to a REST endpoint.
+    This middleware transforms Meshtastic protocol messages into the format
+    required by Urbit's Channels application, then sends the formatted data to
+    a REST endpoint.
 
     Attributes:
         Inherits all attributes from the Middleware base class:
-        - get_response (callable): Function to call the next middleware in the chain
+        - get_response (callable): Function to call the next middleware in the
+        chain
         - config (dict): Global configuration dictionary
         - middleware_config (dict): Configuration specific to this middleware
         - logger (Logger): Logger instance for this middleware
@@ -20,38 +25,51 @@ class TlonFormatMiddleware(Middleware):
         - urbit_channel_nest (str): The channel nest path in Urbit
         - (Other configuration required by send_to_rest_endpoint method)
     """
+
     def __call__(self, data, *args, **kwargs):
         """
-        Process the Meshtastic message by formatting it for Urbit and sending it.
+        Process the Meshtastic message by formatting it for Urbit and sending
+        it.
 
         Args:
-            data: The Meshtastic message envelope to process
+            data: The MQTT message to process
             _args: Positional arguments to pass to the next middleware
             **kwargs: Keyword arguments to pass to the next middleware
 
         Returns:
-            The result of passing the formatted data through the rest of the middleware chain
+            The result of passing the formatted data through the rest of the
+            middleware chain
 
         Note:
-            This method calls send_to_rest_endpoint to transmit the formatted payload
-            to the configured endpoint before continuing the middleware chain.
+            This method calls send_to_rest_endpoint to transmit the formatted
+            payload to the configured endpoint before continuing the middleware
+            chain.
         """
-        result = self.send_to_rest_endpoint(self.middleware_config, data)
+        middleware_config = self.middleware_config
+        result = self.tlon_format(middleware_config, data)
+        # Using the mqtt topic from the channel_map, we will identify which
+        # Tlon channel to send the data to
+        kwargs["path_override"] = middleware_config.get("urbit_channel_map")[
+            data.topic
+        ]
         return self.get_response(result, *args, **kwargs)
 
-    def tlon_format(self, config, envelope):
+    def tlon_format(self, config, data):
         """
-        Format a Meshtastic message envelope into Urbit's Channels message format.
+        Format a Meshtastic message envelope into Urbit's Channels message
+        format.
 
-        This method extracts information from the Meshtastic envelope and formats it
-        into a JSON payload suitable for posting to an Urbit ship's Channels application.
+        This method extracts information from the Meshtastic envelope and
+        formats it into a JSON payload suitable for posting to an Urbit ship's
+        Channels application.
 
         Args:
             config (dict): Configuration dictionary containing Urbit settings
             envelope: Meshtastic message envelope containing the message data
 
         Returns:
-            list: A list containing a single dictionary with the formatted Urbit poke action
+            list: A list containing a single dictionary with the formatted
+            Urbit poke action
 
         Format details:
             - Formats the message as a chat post with the original message text
@@ -62,51 +80,48 @@ class TlonFormatMiddleware(Middleware):
         Note:
             Requires the global variable PAYLOAD_ID to be initialized elsewhere
         """
-        config = self.middleware_config
-        mesh_payload = envelope.packet.decoded.payload.decode('utf-8')
-        mesh_channel = envelope.channel_id
-        mesh_user = envelope.gateway_id
-        mesh_payload_time = envelope.packet.rx_time
-        mesh_message = f"{mesh_payload}"
-        mesh_signature = f"{mesh_user} via {mesh_channel}"
+        channel = data.topic
+        message = f"{data.payload}"
+        signature = f"via {channel}"
         global PAYLOAD_ID
         PAYLOAD_ID += 1
         urbit_payload = [
             {
                 "id": PAYLOAD_ID,
                 "action": "poke",
-                "ship": config.get('urbit_id').replace("~", ""),
+                "ship": config.get("urbit_id").replace("~", ""),
                 "app": "channels",
                 "mark": "channel-action",
                 "json": {
                     "channel": {
-                        "nest": config.get('urbit_channel_nest'),
+                        "nest": config.get("urbit_channel_map")[channel][
+                            "nest"
+                        ],
                         "action": {
                             "post": {
                                 "add": {
-                                    "kind-data": {
-                                        "chat": None
-                                    },
-                                    "author": config.get('urbit_id'),
-                                    # milliseconds since epoch from sender
-                                    "sent": mesh_payload_time * 1000,
+                                    "kind-data": {"chat": None},
+                                    "author": config.get("urbit_id"),
+                                    "sent": int(time.time()) * 1000,
                                     "content": [
                                         {
                                             "inline": [
-                                                mesh_message,
+                                                message,
                                                 {"break": None},
-                                                {"blockquote": [
-                                                    mesh_signature,
-                                                    {"break": None},
-                                                ]}
+                                                {
+                                                    "blockquote": [
+                                                        signature,
+                                                        {"break": None},
+                                                    ]
+                                                },
                                             ]
                                         }
-                                    ]
+                                    ],
                                 }
                             }
-                        }
+                        },
                     }
-                }
+                },
             }
         ]
         return urbit_payload

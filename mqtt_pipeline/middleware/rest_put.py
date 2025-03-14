@@ -1,5 +1,7 @@
-import requests
 import time
+
+import requests
+
 from mqtt_pipeline.pipeline import Middleware
 
 
@@ -30,21 +32,23 @@ class RestPutMiddleware(Middleware):
         Raises:
             No exceptions are raised as they are caught and logged internally
         """
-        for attempt in range(config.get('retries')):
+        for attempt in range(config.get("retries")):
             try:
                 self.logger.info(
                     f"Sending data to endpoint: {config.get('host')}"
                 )
-                session = config.get('session')
+                session = config.get("session")
                 data_response = session.put(
-                    f"{config.get('host')}",
+                    f"{config.get('host')}/{config.get('path')}",
                     data=data,
-                    headers=config.get('headers'),
-                    timeout=config.get('timeout')
+                    headers=config.get("headers"),
+                    timeout=config.get("timeout"),
                 )
 
-                if data_response.status_code >= 200 and \
-                        data_response.status_code < 300:
+                if (
+                    data_response.status_code >= 200
+                    and data_response.status_code < 300
+                ):
                     self.logger.info("Successfully sent data payload.")
                 else:
                     self.logger.warning(
@@ -56,16 +60,17 @@ class RestPutMiddleware(Middleware):
 
             except requests.exceptions.RequestException as e:
                 self.logger.error(
-                    f"Failed to send data to Urbit endpoint: {e}"
+                    f"Failed to send data to Urbit endpoint: \
+                                  {e}"
                 )
 
             # If we get here, the request failed
-            if attempt < config.get('retries') - 1:
+            if attempt < config.get("retries") - 1:
                 self.logger.info(
                     f"Retrying in {config.get('retry_delay')} seconds... (Attempt \
                     {attempt + 1}/{config.get('retries')})"
                 )
-                time.sleep(config.get('retry_delay'))
+                time.sleep(config.get("retry_delay"))
 
         self.logger.error(
             f"Failed to send data to endpoint after {config.get('retries')} \
