@@ -1,5 +1,5 @@
 import protobufs.mqtt_pb2 as mqtt_pb2
-from mqtt_pipeline import Middleware
+from mqtt_pipeline.pipeline import Middleware
 
 
 class MeshtasticMiddleware(Middleware):

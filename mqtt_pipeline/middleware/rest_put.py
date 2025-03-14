@@ -1,6 +1,6 @@
 import requests
 import time
-from mqtt_pipeline import Middleware
+from mqtt_pipeline.pipeline import Middleware
 
 
 class RestPutMiddleware(Middleware):
