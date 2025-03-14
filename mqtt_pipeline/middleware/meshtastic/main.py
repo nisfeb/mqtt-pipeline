@@ -1,4 +1,4 @@
-import mqtt_pipeline.middleware.meshtastic.protobufs.mqtt_pb2 as mqtt_pb2
+import .protobufs.mqtt_pb2 as mqtt_pb2
 from mqtt_pipeline.pipeline import Middleware
 
 
