@@ -10,13 +10,17 @@ def start_bridge(pipeline):
         pipeline (object): An object containing:
             - config (dict): Configuration dictionary with the following keys:
                 - mqtt_client_id (str): Unique identifier for the MQTT client
-                - mqtt_username (str): Username for MQTT authentication (optional)
-                - mqtt_password (str): Password for MQTT authentication (optional)
+                - mqtt_username (str): Username for MQTT authentication \
+                    (optional)
+                - mqtt_password (str): Password for MQTT authentication \
+                    (optional)
                 - mqtt_broker (str): Hostname or IP address of the MQTT broker
                 - mqtt_port (int): Port number of the MQTT broker
-                - mqtt_topic (str): Topic to subscribe to for receiving messages
+                - mqtt_topic (str): Topic to subscribe to for receiving \
+                    messages
             - logger (logging.Logger): Logger object for recording events
-            - process (callable): Callback function to handle incoming MQTT messages
+            - process (callable): Callback function to handle incoming MQTT \
+                messages
 
     Returns:
         None: This function runs until interrupted or an error occurs
@@ -29,29 +33,31 @@ def start_bridge(pipeline):
         keyboard interrupt or when an exception occurs.
     """
 
-    def _on_connect(logger, client, userdata, flags, rc):
+    def _on_connect(client, userdata, flags, rc):
         """Callback for when the client connects to the MQTT broker."""
         if rc == 0:
-            logger.info(
+            pipeline.logger.info(
                 f"Connected to MQTT broker at \
                 {pipeline.config['mqtt_broker']} and port \
                 {pipeline.config['mqtt_port']}"
             )
-            client.subscribe(pipeline.config('topic'))
-            logger.info(f"Subscribed to topic: {pipeline.config('topic')}")
+            client.subscribe(pipeline.config("topic"))
+            pipeline.logger.info(
+                f"Subscribed to topic: \
+                                 {pipeline.config('topic')}"
+            )
         else:
-            logger.error(
+            pipeline.logger.error(
                 f"Failed to connect to MQTT broker, return code: {rc}"
             )
 
     # Setup MQTT client
-    client = mqtt.Client(client_id=pipeline.config['mqtt_client_id'])
+    client = mqtt.Client(client_id=pipeline.config["mqtt_client_id"])
 
     # Set username and password if provided
-    if pipeline.config['mqtt_username'] and pipeline.config['mqtt_password']:
+    if pipeline.config["mqtt_username"] and pipeline.config["mqtt_password"]:
         client.username_pw_set(
-            pipeline.config['mqtt_username'],
-            pipeline.config['mqtt_password']
+            pipeline.config["mqtt_username"], pipeline.config["mqtt_password"]
         )
 
     # Set callbacks
@@ -66,9 +72,9 @@ def start_bridge(pipeline):
             {pipeline.config['mqtt_port']}..."
         )
         client.connect(
-            pipeline.config['mqtt_broker'],
-            pipeline.config['mqtt_port'],
-            60
+            pipeline.config["mqtt_broker"],
+            pipeline.config["mqtt_port"],
+            60,
         )
 
         # Start the loop
