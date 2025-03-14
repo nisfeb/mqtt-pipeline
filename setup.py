@@ -65,7 +65,7 @@ setup(
         'mqtt_pipeline',
         'mqtt_pipeline.*',
     ]),
-    python_requires='>=3.6',
+    python_requires='>=3.13',
     install_requires=[
         'paho-mqtt>=1.6.1',
         'requests>=2.31.0',
