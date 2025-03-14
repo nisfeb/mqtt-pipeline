@@ -86,5 +86,5 @@ def start_bridge(pipeline):
         client.disconnect()
 
     except Exception as e:
-        pipeline.logger.error(f"Error in main loop: {e}")
+        pipeline.logger.exception(f"Error in main loop: {e}")
         client.disconnect()
