@@ -1,4 +1,4 @@
-from .protobufs import mqtt_pb2
+from .protobufs.meshtastic import mqtt_pb2
 from mqtt_pipeline.pipeline import Middleware
 
 
