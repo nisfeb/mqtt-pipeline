@@ -41,10 +41,10 @@ def start_bridge(pipeline):
                 {pipeline.config['mqtt_broker']} and port \
                 {pipeline.config['mqtt_port']}"
             )
-            client.subscribe(pipeline.config["topic"])
+            client.subscribe(pipeline.config["mqtt_topic"])
             pipeline.logger.info(
                 f"Subscribed to topic: \
-                                 {pipeline.config('topic')}"
+                                 {pipeline.config['mqtt_topic']}"
             )
         else:
             pipeline.logger.error(
