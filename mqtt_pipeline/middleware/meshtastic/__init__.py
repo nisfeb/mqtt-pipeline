@@ -1,2 +1,2 @@
-from .main import MeshtasticMiddleware
-from .protobufs import *
+from .main import *
+from . import protobufs
