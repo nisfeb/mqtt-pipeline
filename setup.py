@@ -17,6 +17,8 @@ setup(
         'paho-mqtt>=1.6.1',
         'requests>=2.31.0',
         'python-dotenv>=1.0.0',
+        'protobufs>=6.30.1',
+        'meshtastic>=2.6.0',
     ],
     extras_require={
         'dev': ['pytest>=4.4.1', 'pytest-runner'],
