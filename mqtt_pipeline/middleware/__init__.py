@@ -1,3 +1,3 @@
-from .rest_input import RestPutMiddleware
+from .rest_put import RestPutMiddleware
 from .tlon_format import TlonFormatMiddleware
 from .meshtastic import MeshtasticMiddleware
